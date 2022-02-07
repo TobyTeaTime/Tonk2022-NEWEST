@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
@@ -31,6 +32,16 @@ public class RobotMap {
     public static TalonSRX ConveyorMotor1 = new TalonSRX(7);
     public static TalonSRX ConveyorMotor2 = new TalonSRX(15);
     // Turret
+
+    //pigeon
+    public static WPI_PigeonIMU  pidgey = new WPI_PigeonIMU(ConveyorMotor2);
+    public static double heading;
+    public static double kP = 1;
+    public static double testPrint1 = pidgey.getAngle();
+    public static double testPrint2 = pidgey.getCompassHeading();
+    public static double testPrint3 = pidgey.getYaw();
+
+    
 
     public static TalonSRX Turret = new TalonSRX(51); // This shoudl be turret 20
     // Flywheel

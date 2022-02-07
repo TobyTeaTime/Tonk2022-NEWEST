@@ -12,13 +12,13 @@ click "Teleoperated"
 
 package com.frc7528.robot;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.MjpegServer;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTable;
+//import edu.wpi.first.cscore.CvSink;
+//import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.MjpegServer;
+import edu.wpi.first.cscore.UsbCamera;
+//import edu.wpi.first.networktables.NetworkTableEntry;
+//import edu.wpi.first.networktables.NetworkTableInstance;
+//import edu.wpi.first.networktables.NetworkTable;
 //import edu.wpi.first.wpilibj.GenericHID;
 //import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -61,8 +61,8 @@ public class Robot extends TimedRobot {
 		private double RAft;
 		private double LAft;
 		private boolean found;
-		UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture(0);
-		MjpegServer switchCam = CameraServer.getInstance().addSwitchedCamera("Camera");
+		UsbCamera cam0 = CameraServer.startAutomaticCapture(0);
+		MjpegServer switchCam = CameraServer.addSwitchedCamera("Camera");
 
 		//UsbCamera cam = new UsbCamera(, path)
 		//CvSink cvSink = cam.getVideo();
@@ -86,6 +86,14 @@ public class Robot extends TimedRobot {
 				Shuffleboard.getTab("DEBUG").add("Right Aft Drivetrain Firm",m_rightAft.getFirmwareVersion());
 				Shuffleboard.getTab("DEBUG").add("Right Front Drivetrain Firm",m_rightFront.getFirmwareVersion());
 				Shuffleboard.getTab("DEBUG").add("Last code deploy",sdf.format(file.lastModified()));
+				Shuffleboard.getTab("DEBUG").add("Pigeon IMU", pidgey);
+				Shuffleboard.getTab("DEBUG").add("Angle", testPrint1);
+				Shuffleboard.getTab("DEBUG").add("Compass Heading", testPrint2);
+				Shuffleboard.getTab("DEBUG").add("Yaw", testPrint3);
+
+				System.out.println(testPrint1);
+				System.out.println(testPrint2);
+				System.out.println(testPrint3);
 					
 				//Format all motor controllers
 				m_leftAft.configFactoryDefault();
@@ -155,6 +163,7 @@ public class Robot extends TimedRobot {
 				m_drive.setDeadband(deadBandOptions.getSelected()); //Set deadband
 				limelightTable.getEntry("ledMode").setNumber(0);
 				System.out.println("yo");
+				heading = pidgey.getAngle();
 		}
 
 		//Teleop driving (Fine control and joystick control)
@@ -256,10 +265,11 @@ public class Robot extends TimedRobot {
 				} else {
 
 						//Curvature Drive
+						double error  = heading - pidgey.getRate();
 						if (isInverted) {
-								m_drive.curvatureDrive(m_joy.getY(), m_joy.getX(), m_joy.getRawButton(2));
+								m_drive.curvatureDrive(m_joy.getY() + kP  * error, m_joy.getX() - kP  * error, m_joy.getRawButton(2));
 						} else {
-								m_drive.curvatureDrive(-m_joy.getY(), m_joy.getX(), m_joy.getRawButton(2));
+								m_drive.curvatureDrive(-m_joy.getY() + kP  * error, m_joy.getX() - kP  * error, m_joy.getRawButton(2));
 						}
 				}
 		}
